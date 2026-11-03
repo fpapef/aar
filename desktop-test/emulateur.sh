@@ -21,7 +21,7 @@ adb emu sms send 776543210 "Salut, on se voit demain a 18h au marche ?"
 sleep 8
 
 adb shell dumpsys notification --noredact > captures/notifications.txt
-NB=$(grep -c "pkg=sn.aar" captures/notifications.txt || true)
+NB=$(grep -c "NotificationRecord(.*pkg=sn.aar" captures/notifications.txt || true)
 echo "Notifications d'Aar : $NB"
 grep -A40 "pkg=sn.aar" captures/notifications.txt | grep -E "android.title=|android.text=" | head -6
 if [ "$NB" -ne 1 ]; then echo "::error::Une seule alerte attendue, $NB trouvee(s)"; ECHEC=1; fi
@@ -33,9 +33,10 @@ $UI capture 2-notification
 adb shell cmd statusbar collapse
 sleep 1
 
+adb shell wm size
 adb shell am start -W -n sn.aar/.MainActivity
 sleep 3
-$UI defiler 2
+$UI defiler 3
 $UI capture 3-alertes
 $UI toucher 781234567 || ECHEC=1
 $UI capture 4-detail

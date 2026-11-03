@@ -50,6 +50,6 @@ fi
 OUT="Aar-$VERSION_NAME.apk"
 "$BT/apksigner" sign --ks "$KS" --ks-key-alias aar --ks-pass env:KS_PASS --key-pass env:KS_PASS \
   --out "$OUT" $B/apk/aligned.apk
-"$BT/apksigner" verify --verbose "$OUT" | head -4
+"$BT/apksigner" verify --verbose --print-certs "$OUT" | grep -E "Verified using v2|certificate SHA-256" | head -3
 "$BT/aapt2" dump badging "$OUT" | grep -E "^(package|sdkVersion|targetSdkVersion|uses-permission|application-label:)" || true
 ls -la "$OUT"

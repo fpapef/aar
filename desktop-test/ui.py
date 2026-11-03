@@ -6,9 +6,25 @@ def adb(*args, **kw):
     return subprocess.run(["adb", *args], capture_output=True, **kw)
 
 
+def taille():
+    out = adb("shell", "wm", "size", text=True).stdout
+    m = re.findall(r"(\d+)x(\d+)", out)
+    return (int(m[-1][0]), int(m[-1][1])) if m else (1080, 2400)
+
+
+def lire_xml():
+    for _ in range(3):
+        r = adb("shell", "uiautomator", "dump", "/sdcard/ui.xml", text=True)
+        xml = adb("exec-out", "cat", "/sdcard/ui.xml", text=True).stdout
+        if "<node" in xml:
+            return xml
+        print("uiautomator :", (r.stdout + r.stderr).strip()[:300])
+        time.sleep(2)
+    return ""
+
+
 def noeuds():
-    adb("shell", "uiautomator", "dump", "/sdcard/ui.xml")
-    xml = adb("exec-out", "cat", "/sdcard/ui.xml", text=True).stdout
+    xml = lire_xml()
     for m in re.finditer(r'<node [^>]*?text="([^"]*)"[^>]*?bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', xml):
         yield m.group(1), (int(m.group(2)) + int(m.group(4))) // 2, (int(m.group(3)) + int(m.group(5))) // 2
 
@@ -22,12 +38,14 @@ def toucher(texte, essais=6):
                 return True
         defiler()
     print(f"::error::Texte introuvable a l'ecran : {texte}")
+    print("Textes visibles :", [t for t, _, _ in noeuds() if t][:25])
     return False
 
 
 def defiler():
-    adb("shell", "input", "swipe", "540", "1700", "540", "700", "300")
-    time.sleep(1)
+    w, h = taille()
+    adb("shell", "input", "swipe", str(w // 2), str(h * 70 // 100), str(w // 2), str(h * 30 // 100), "400")
+    time.sleep(1.5)
 
 
 def capture(nom):

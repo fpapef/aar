@@ -417,14 +417,16 @@ public class MainActivity extends Activity {
         int couleur = Ui.couleur(v.niveau);
         LinearLayout c = Ui.vbox(this);
         c.setBackground(Ui.roundedStroke(Ui.couleurDouce(v.niveau), (couleur & 0x00FFFFFF) | 0x66000000, dp(1), dp(20)));
-        c.setPadding(dp(18), dp(18), dp(18), dp(18));
+        c.setPadding(dp(16), dp(16), dp(16), dp(16));
         c.setLayoutParams(Ui.margins(Ui.matchWrap(), this, 0, 0, 0, 14));
 
         LinearLayout tete = Ui.hbox(this);
-        tete.addView(Ui.pastille(this, Ui.icone(v.niveau), couleur, Ui.BG, 44, 26));
+        tete.addView(Ui.pastille(this, Ui.icone(v.niveau), couleur, Ui.BG, 40, 24));
         LinearLayout titres = Ui.vbox(this);
-        titres.setPadding(dp(14), 0, 0, 0);
-        titres.addView(Ui.bold(this, v.titre(), 20, couleur));
+        titres.setPadding(dp(12), 0, 0, 0);
+        TextView titre = Ui.bold(this, v.titre(), 18, couleur);
+        titre.setSingleLine(true);
+        titres.addView(titre);
         titres.addView(Ui.caption(this, "Risque : " + v.score + " / 100"));
         tete.addView(titres, Ui.weight(1));
         c.addView(tete);
