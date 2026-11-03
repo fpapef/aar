@@ -60,7 +60,7 @@ Aar est une aide, pas une garantie : il peut laisser passer une arnaque ou signa
 
 Pas de Gradle : `build.sh` enchaîne aapt2, javac, D8, zipalign et apksigner avec le SDK Android (`ANDROID_HOME`). La clé de signature n'est pas publiée dans ce dépôt ; son mot de passe se donne dans la variable `KS_PASS`.
 
-À chaque envoi sur GitHub, le workflow [`apk.yml`](.github/workflows/apk.yml) lance les tests du moteur puis construit l'APK. Une étiquette `v…` publie la version dans Releases.
+À chaque envoi sur GitHub, le workflow [`apk.yml`](.github/workflows/apk.yml) lance les tests du moteur puis construit l'APK signé ; publier une version dans Releases y joint l'APK. Le workflow [`emulateur.yml`](.github/workflows/emulateur.yml) installe l'appli sur un émulateur Android 14, lui envoie un faux SMS d'arnaque et un vrai message, et vérifie qu'une seule alerte part.
 
 Le moteur de détection (`src/sn/aar/core`) est en Java pur et se teste sur ordinateur :
 
