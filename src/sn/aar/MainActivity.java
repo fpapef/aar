@@ -650,8 +650,10 @@ public class MainActivity extends Activity {
         } else {
             int n = b.signales.size();
             titre = n + (n > 1 ? " messages à surveiller" : " message à surveiller");
-            detail = pluriel(b.arnaques, "arnaque probable", "arnaques probables") + " et "
-                    + pluriel(b.suspects, "message suspect", "messages suspects") + " parmi tes " + b.analyses + " derniers SMS.";
+            String a = pluriel(b.arnaques, "arnaque probable", "arnaques probables");
+            String su = pluriel(b.suspects, "message suspect", "messages suspects");
+            String quoi = b.arnaques == 0 ? su : (b.suspects == 0 ? a : a + " et " + su);
+            detail = Character.toUpperCase(quoi.charAt(0)) + quoi.substring(1) + " parmi tes " + b.analyses + " derniers SMS.";
         }
         TextView t = Ui.bold(this, titre, 18, couleur);
         t.setPadding(dp(14), 0, 0, 0);
