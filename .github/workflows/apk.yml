@@ -1,0 +1,68 @@
+name: APK
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Tests du moteur de détection
+        run: |
+          javac -encoding UTF-8 --release 8 -d /tmp/tests src/sn/aar/core/*.java desktop-test/TestDetecteur.java
+          java -Dstdout.encoding=UTF-8 -cp /tmp/tests TestDetecteur
+
+      - name: Outils Android
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;35.0.0" > /dev/null
+          echo "BUILD_TOOLS=$ANDROID_HOME/build-tools/35.0.0" >> "$GITHUB_ENV"
+          echo "PLATFORM=$ANDROID_HOME/platforms/android-35" >> "$GITHUB_ENV"
+
+      - name: Clé de signature
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+        run: |
+          mkdir -p keystore
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > keystore/aar.jks
+          else
+            echo "::warning::Aucune clé de signature dans les secrets : une clé temporaire est créée pour ce build."
+          fi
+
+      - name: Construire l'APK
+        env:
+          KS_PASS: ${{ secrets.KS_PASS || 'cle-temporaire' }}
+        run: ./build.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Aar-apk
+          path: Aar-*.apk
+
+      - name: Publier la version
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="$GITHUB_REF_NAME"
+          NOTES="docs/notes/$TAG.md"
+          [ -f "$NOTES" ] || NOTES=/dev/null
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" Aar-*.apk --clobber
+          else
+            gh release create "$TAG" Aar-*.apk --title "Aar ${TAG#v}" --notes-file "$NOTES"
+          fi

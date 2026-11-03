@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg">#0C1110</color>
+    <color name="accent">#2BD47D</color>
+    <color name="icone_fond">#0F2A1D</color>
+    <style name="AppTheme" parent="android:Theme.Material.NoActionBar">
+        <item name="android:colorAccent">#2BD47D</item>
+        <item name="android:colorPrimary">#0C1110</item>
+        <item name="android:colorPrimaryDark">#0C1110</item>
+        <item name="android:colorControlActivated">#2BD47D</item>
+        <item name="android:colorControlHighlight">#332BD47D</item>
+        <item name="android:windowBackground">@color/bg</item>
+        <item name="android:statusBarColor">#0C1110</item>
+        <item name="android:navigationBarColor">#141B19</item>
+        <item name="android:textColorPrimary">#F1F5F3</item>
+        <item name="android:textColorSecondary">#A3AFAA</item>
+        <item name="android:textColorHint">#6C7873</item>
+        <item name="android:textCursorDrawable">@null</item>
+    </style>
+</resources>

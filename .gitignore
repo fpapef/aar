@@ -1,0 +1,9 @@
+# Cle de signature : jamais publiee
+keystore/
+*.jks
+*.keystore
+
+# Fichiers generes
+build/
+*.apk
+*.class
